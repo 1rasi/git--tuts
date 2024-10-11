@@ -1,3 +1,21 @@
-free -g
-nproc
+###########################################
+# BASE IMAGE
+###########################################
 
+FROM golang:alpine AS build
+
+WORKDIR /app
+
+COPY . .
+
+RUN go build -o app .
+
+############################################
+# HERE STARTS THE MAGIC OF MULTI STAGE BUILD
+############################################
+
+FROM scratch
+
+COPY --from=build /app/app /app
+
+ENTRYPOINT ["/app"]
